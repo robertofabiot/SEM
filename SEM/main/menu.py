@@ -377,7 +377,6 @@ def mostrar_historial_ventas():
 
 def ejecutar_menu():
     """Ejecuta el menú principal"""
-    funciones.inicializar_sistema()
     while True:
         mostrar_menu_principal()
         opcion = obtener_opcion()
