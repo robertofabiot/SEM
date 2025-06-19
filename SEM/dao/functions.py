@@ -67,12 +67,12 @@ def crear_productos_ejemplo():
     """Crea productos de ejemplo si no existen"""
     global productos
     productos_ejemplo = [
-        Producto(1, "Parlante JBL EON615", 450.0, 10, "parlante", "Parlante activo 15 pulgadas"),
-        Producto(2, "Pantalla LED 55\"", 800.0, 5, "pantalla", "Pantalla LED 55 pulgadas 4K"),
-        Producto(3, "Luz Par LED RGB", 120.0, 20, "luz", "Luz Par LED con control RGB"),
-        Producto(4, "Micrófono Shure SM58", 99.0, 8, "parlante", "Micrófono dinámico profesional"),
-        Producto(5, "Pantalla Proyector 100\"", 200.0, 3, "pantalla", "Pantalla para proyector 100 pulgadas"),
-        Producto(6, "Luz Estrobo LED", 85.0, 15, "luz", "Luz estroboscópica LED alta potencia")
+        Producto(1, "Parlante JBL EON615", 450.0, 400.0, 10, "parlante", "Parlante activo 15 pulgadas"),
+        Producto(2, "Pantalla LED 55\"", 800.0, 700.0, 5, "pantalla", "Pantalla LED 55 pulgadas 4K"),
+        Producto(3, "Luz Par LED RGB", 120.0, 100.0, 20, "luz", "Luz Par LED con control RGB"),
+        Producto(4, "Micrófono Shure SM58", 99.0, 90.0, 8, "parlante", "Micrófono dinámico profesional"),
+        Producto(5, "Pantalla Proyector 100\"", 200.0, 180.0, 3, "pantalla", "Pantalla para proyector 100 pulgadas"),
+        Producto(6, "Luz Estrobo LED", 85.0, 80.0, 15, "luz", "Luz estroboscópica LED alta potencia")
     ]
     productos.extend(productos_ejemplo)
     guardar_productos()
@@ -100,11 +100,11 @@ def obtener_siguiente_id_producto():
         return 1
     return max(p.id_producto for p in productos) + 1
 
-def agregar_producto(nombre, precio_unitario, cantidad_disponible, categoria, descripcion=""):
+def agregar_producto(nombre, precio_venta, precio_servicio, cantidad_disponible, categoria, descripcion=""):
     """Agrega un nuevo producto al inventario"""
     global productos
     id_producto = obtener_siguiente_id_producto()
-    producto = Producto(id_producto, nombre, precio_unitario, cantidad_disponible, categoria, descripcion)
+    producto = Producto(id_producto, nombre, precio_venta, precio_servicio, cantidad_disponible, categoria, descripcion)
     productos.append(producto)
     guardar_productos()
     return producto
@@ -164,11 +164,11 @@ def imprimir_inventario():
     if not productos:
         print("No hay productos en el inventario.")
         return
-    
-    print("\n" + "="*80)
-    print(f"{'ID':<5} {'NOMBRE':<25} {'PRECIO':<10} {'STOCK':<8} {'CATEGORÍA':<12} {'ESTADO':<10}")
-    print("="*80)
-    
+
+    print("\n" + "="*100)
+    print(f"{'ID':<5} {'NOMBRE':<25} {'VENTA':<10} {'SERVICIO':<10} {'STOCK':<8} {'CATEGORÍA':<12} {'ESTADO':<10}")
+    print("="*100)
+
     for producto in productos:
         if producto.cantidad_disponible == 0:
             color = Fore.RED
@@ -179,18 +179,20 @@ def imprimir_inventario():
         else:
             color = Fore.GREEN
             estado = "DISPONIBLE"
-        
-        print(f"{color}{producto.id_producto:<5} {producto.nombre:<25} ${producto.precio_unitario:<9.2f} {producto.cantidad_disponible:<8} {producto.categoria:<12} {estado:<10}{Style.RESET_ALL}")
-    
-    print("="*80)
-    
+
+        print(f"{color}{producto.id_producto:<5} {producto.nombre:<25} "
+              f"${producto.precio_venta:<9.2f} ${producto.precio_servicio:<9.2f} "
+              f"{producto.cantidad_disponible:<8} {producto.categoria:<12} {estado:<10}{Style.RESET_ALL}")
+
+    print("="*100)
+
     # Mostrar resumen
     stock_bajo = obtener_productos_stock_bajo()
     sin_stock = obtener_productos_sin_stock()
-    
+
     if stock_bajo:
         print(f"\n{Fore.YELLOW}⚠️  ALERTA: {len(stock_bajo)} productos con stock bajo{Style.RESET_ALL}")
-    
+
     if sin_stock:
         print(f"{Fore.RED}❌ ATENCIÓN: {len(sin_stock)} productos sin stock{Style.RESET_ALL}")
 
@@ -249,18 +251,18 @@ def obtener_siguiente_id_cotizacion():
 def crear_cotizacion(cliente, items_data, costo_transporte=0.0, horas_extras=0, precio_hora_extra=50.0):
     """Crea una nueva cotización"""
     global cotizaciones
-    
-    # Crear items de cotización
+
+    # Crear items de cotización con precio de servicio
     items = []
     for item_data in items_data:
         producto = buscar_producto_por_id(item_data['id_producto'])
         if producto:
             item = ItemCotizacion(producto, item_data['cantidad'])
             items.append(item)
-    
+
     if not items:
         return None
-    
+
     id_cotizacion = obtener_siguiente_id_cotizacion()
     cotizacion = Cotizacion(id_cotizacion, cliente, items, costo_transporte, horas_extras, precio_hora_extra)
     cotizaciones.append(cotizacion)
@@ -280,7 +282,7 @@ def imprimir_cotizacion(cotizacion):
     print(f"Dirección: {cotizacion.cliente.direccion}")
     print("-"*80)
     
-    # Detalles de productos
+    # Encabezado productos
     print(f"{'PRODUCTO':<30} {'CANT.':<6} {'P.UNIT':<10} {'TOTAL':<12} {'OBSERV.':<10}")
     print("-"*80)
     
@@ -289,7 +291,8 @@ def imprimir_cotizacion(cotizacion):
         if item.cantidad_excedente > 0:
             observacion = f"+20% ({item.cantidad_excedente})"
         
-        print(f"{item.producto.nombre:<30} {item.cantidad_solicitada:<6} ${item.producto.precio_unitario:<9.2f} ${item.precio_total:<11.2f} {observacion:<10}")
+        print(f"{item.producto.nombre:<30} {item.cantidad_solicitada:<6} "
+              f"${item.producto.precio_servicio:<9.2f} ${item.precio_total:<11.2f} {observacion:<10}")
     
     print("-"*80)
     

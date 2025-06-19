@@ -73,4 +73,3 @@ if __name__ == "__main__":
     
     # Ejecutar programa principal
     main()
-

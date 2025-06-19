@@ -51,8 +51,9 @@ def registrar_inventario():
             if not nombre:
                 print(f"{Fore.RED}El nombre no puede estar vacío.{Style.RESET_ALL}")
                 return
-            
-            precio = float(input("Precio unitario: $"))
+
+            precio_venta = float(input("Precio unitario de venta: $"))
+            precio_servicio = float(input("Precio unitario de servicio: $"))
             cantidad = int(input("Cantidad disponible: "))
             
             print("\nCategorías disponibles:")
@@ -66,7 +67,7 @@ def registrar_inventario():
             
             descripcion = input("Descripción (opcional): ").strip()
             
-            producto = funciones.agregar_producto(nombre, precio, cantidad, categoria, descripcion)
+            producto = funciones.agregar_producto(nombre, precio_venta, precio_servicio, cantidad, categoria, descripcion)
             print(f"{Fore.GREEN}✓ Producto agregado exitosamente: {producto}{Style.RESET_ALL}")
             
         elif sub_opcion == 2:
@@ -85,7 +86,7 @@ def registrar_inventario():
                     print(f"{Fore.RED}Error al actualizar el stock.{Style.RESET_ALL}")
             else:
                 print(f"{Fore.RED}Producto no encontrado.{Style.RESET_ALL}")
-        
+    
     except ValueError:
         print(f"{Fore.RED}Error: Ingrese valores numéricos válidos.{Style.RESET_ALL}")
     except Exception as e:

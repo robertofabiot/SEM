@@ -8,10 +8,10 @@ Smart Easy Manager (SEM) es un sistema completo para la gestión de un negocio d
 
 ### Características Principales
 
-- ✅ **Gestión de Inventario**: Control completo de productos con alertas de stock bajo
-- ✅ **Cotizaciones Automáticas**: Cálculo automático de precios con recargos por excedentes
+- ✅ **Gestión de Inventario**: Control completo de productos con alertas de stock bajo y precios diferenciados para venta y servicio
+- ✅ **Cotizaciones Automáticas**: Cálculo automático de precios de servicio con recargos por excedentes
 - ✅ **Control de Clientes**: Registro de clientes con descuentos personalizados
-- ✅ **Ventas**: Registro de ventas con actualización automática del inventario
+- ✅ **Ventas**: Registro de ventas con precios específicos de venta y actualización automática del inventario
 - ✅ **Historial Completo**: Seguimiento de todas las cotizaciones y ventas
 - ✅ **Persistencia de Datos**: Almacenamiento en archivos binarios para conservar información
 - ✅ **Interfaz Colorida**: Uso de colores para mejor experiencia de usuario
@@ -59,7 +59,7 @@ python app.py
 ### Funcionalidades del Sistema
 
 #### 1. Registrar Inventario de Productos
-- Agregar nuevos productos al inventario
+- Agregar nuevos productos al inventario con precios separados para venta y servicio
 - Actualizar stock de productos existentes
 - Categorías: parlantes, pantallas, luces
 
@@ -75,7 +75,7 @@ python app.py
 #### 4. Cotizar Servicio
 - Selección de cliente existente o creación de nuevo cliente
 - Selección de productos con cantidades
-- Cálculo automático de precios:
+- Cálculo automático de precios de servicio:
   - 20% extra por unidades que excedan el stock disponible
   - Descuentos personalizados por cliente
   - Costo de transporte
@@ -86,7 +86,8 @@ python app.py
 - Información: nombre, dirección, teléfono, descuento predefinido
 
 #### 6. Registrar Venta
-- Registro de ventas con actualización automática del inventario
+- Registro de ventas con precios específicos para venta
+- Actualización automática del inventario
 - Verificación de stock disponible
 - Solo permite vender productos con stock suficiente
 

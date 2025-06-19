@@ -1,45 +1,51 @@
 from datetime import datetime
 
 class Producto:
-    def __init__(self, id_producto, nombre, precio_unitario, cantidad_disponible, categoria, descripcion=""):
+    def __init__(self, id_producto, nombre, precio_venta, precio_servicio, cantidad_disponible, categoria, descripcion=""):
         self.id_producto = id_producto
         self.nombre = nombre
-        self.precio_unitario = precio_unitario
+        self.precio_venta = precio_venta                
+        self.precio_servicio = precio_servicio       
         self.cantidad_disponible = cantidad_disponible
-        self.categoria = categoria  # 'parlante', 'pantalla', 'luz'
+        self.categoria = categoria
         self.descripcion = descripcion
-        self.stock_minimo = 5  # Alerta de stock bajo
-    
+        self.stock_minimo = 5
+
     def __str__(self):
-        return f"ID: {self.id_producto}, {self.nombre}, Precio: ${self.precio_unitario:.2f}, Stock: {self.cantidad_disponible}"
-    
+        return (f"ID: {self.id_producto}, {self.nombre}, "
+                f"Precio Venta: ${self.precio_venta:.2f}, "
+                f"Precio Servicio: ${self.precio_servicio:.2f}, "
+                f"Stock: {self.cantidad_disponible}")
+
     def to_dict(self):
         return {
             'id_producto': self.id_producto,
             'nombre': self.nombre,
-            'precio_unitario': self.precio_unitario,
+            'precio_venta': self.precio_venta,            
+            'precio_servicio': self.precio_servicio,        
             'cantidad_disponible': self.cantidad_disponible,
             'categoria': self.categoria,
             'descripcion': self.descripcion,
             'stock_minimo': self.stock_minimo
         }
-    
+
     @classmethod
     def from_dict(cls, data):
         producto = cls(
             data['id_producto'],
             data['nombre'],
-            data['precio_unitario'],
+            data['precio_venta'],              
+            data['precio_servicio'],           
             data['cantidad_disponible'],
             data['categoria'],
             data.get('descripcion', '')
         )
         producto.stock_minimo = data.get('stock_minimo', 5)
         return producto
-    
+
     def tiene_stock_bajo(self):
         return self.cantidad_disponible <= self.stock_minimo
-    
+
     def esta_disponible(self, cantidad_solicitada):
         return self.cantidad_disponible >= cantidad_solicitada
 
@@ -79,13 +85,17 @@ class ItemCotizacion:
         self.cantidad_solicitada = cantidad_solicitada
         self.cantidad_disponible = min(cantidad_solicitada, producto.cantidad_disponible)
         self.cantidad_excedente = max(0, cantidad_solicitada - producto.cantidad_disponible)
-        self.precio_normal = self.cantidad_disponible * producto.precio_unitario
-        self.precio_excedente = self.cantidad_excedente * producto.precio_unitario * 1.2  # 20% extra
+        
+        # Siempre usar precio_servicio del producto
+        precio = producto.precio_servicio
+        
+        self.precio_normal = self.cantidad_disponible * precio
+        self.precio_excedente = self.cantidad_excedente * precio * 1.2  # 20% extra para excedentes
         self.precio_total = self.precio_normal + self.precio_excedente
-    
+
     def __str__(self):
         return f"{self.producto.nombre} x{self.cantidad_solicitada} = ${self.precio_total:.2f}"
-    
+
     def to_dict(self):
         return {
             'producto': self.producto.to_dict(),
@@ -96,7 +106,7 @@ class ItemCotizacion:
             'precio_excedente': self.precio_excedente,
             'precio_total': self.precio_total
         }
-    
+
     @classmethod
     def from_dict(cls, data):
         producto = Producto.from_dict(data['producto'])
@@ -163,8 +173,8 @@ class ItemVenta:
     def __init__(self, producto, cantidad):
         self.producto = producto
         self.cantidad = cantidad
-        self.precio_unitario = producto.precio_unitario
-        self.precio_total = cantidad * producto.precio_unitario
+        self.precio_unitario = producto.precio_venta  # Usar precio_venta explícito
+        self.precio_total = cantidad * self.precio_unitario
     
     def __str__(self):
         return f"{self.producto.nombre} x{self.cantidad} = ${self.precio_total:.2f}"
