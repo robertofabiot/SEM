@@ -63,7 +63,6 @@ def inicializar_sistema():
     
     print("Sistema inicializado correctamente.")
 
-
 def crear_productos_ejemplo():
     """Crea productos de ejemplo si no existen"""
     global productos

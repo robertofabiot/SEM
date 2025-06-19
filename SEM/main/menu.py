@@ -193,7 +193,7 @@ def registrar_cliente_menu():
         cliente_existente = funciones.buscar_cliente_por_nombre(nombre)
         if cliente_existente:
             print(f"{Fore.YELLOW}El cliente ya existe: {cliente_existente}{Style.RESET_ALL}")
-            return cliente_existente  # ✅ retornar el existente
+            return cliente_existente  # retornar el existente
         
         direccion = input("Dirección: ").strip()
         telefono = input("Teléfono: ").strip()
@@ -205,7 +205,7 @@ def registrar_cliente_menu():
         
         cliente = funciones.agregar_cliente(nombre, direccion, telefono, descuento)
         print(f"{Fore.GREEN}✓ Cliente registrado exitosamente: {cliente}{Style.RESET_ALL}")
-        return cliente  # ✅ retornar el nuevo cliente también
+        return cliente  # retornar el nuevo cliente también
         
     except ValueError:
         print(f"{Fore.RED}Error: Ingrese un valor numérico válido para el descuento.{Style.RESET_ALL}")
@@ -280,7 +280,6 @@ def registrar_venta_menu():
         print(f"{Fore.RED}Error: {e}{Style.RESET_ALL}")
 
 def seleccionar_cliente():
-    print(f"DEBUG - clientes en seleccionar_cliente: {len(funciones.clientes)}")
     print("\n¿Qué desea hacer?")
     print("1. Seleccionar cliente existente")
     print("2. Crear nuevo cliente")
@@ -411,4 +410,3 @@ def ejecutar_menu():
         
         # Pausa para que el usuario pueda leer los mensajes
         input(f"\n{Fore.CYAN}Presione Enter para continuar...{Style.RESET_ALL}")
-
