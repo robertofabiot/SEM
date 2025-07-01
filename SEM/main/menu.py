@@ -50,24 +50,60 @@ def añadir_usuario():
     else:
         print("Las claves no coinciden. Usuario no añadido.")
 
+def eliminar_usuario():
+    usuario_eliminar = input("Ingrese el nombre del usuario a eliminar: ").strip()
+    clave_input = pwinput.pwinput("Ingrese la contraseña del usuario: ", mask="*")
+    # Verifica que el archivo de usuarios exista, si no, muestra error y termina la función
+    if not os.path.exists(ruta):
+        print(f"{Fore.RED}El archivo de usuarios no existe.{Style.RESET_ALL}")
+        return
+    # Lee todas las líneas del archivo de usuarios para procesarlas
+    with open(ruta, "r") as archivo:
+        lineas = archivo.readlines()
+
+    nuevo_contenido = []  # Lista para guardar las líneas que no serán eliminadas
+    eliminado = False    
+
+    # Recorre cada línea del archivo para verificar si coincide con usuario y clave ingresados
+    for linea in lineas:
+        usuario, clave = linea.strip().split(",")
+        # Si el usuario y clave coinciden, marca eliminado y no agrega esta línea a nuevo contenido
+        if usuario == usuario_eliminar and clave == clave_input:
+            eliminado = True
+            continue  # Salta agregar esta línea, es decir, elimina el usuario
+        # Si no coincide, mantiene la línea en el nuevo contenido
+        nuevo_contenido.append(linea)
+
+    # Si se eliminó el usuario, se sobrescribe el archivo con las líneas restantes
+    if eliminado:
+        with open(ruta, "w") as archivo:
+            archivo.writelines(nuevo_contenido)
+        print(f"{Fore.GREEN}Usuario '{usuario_eliminar}' eliminado correctamente.{Style.RESET_ALL}")
+    else:
+        # Si no se encontró el usuario o la clave no coincide, muestra mensaje de error
+        print(f"{Fore.RED}Usuario no encontrado o contraseña incorrecta.{Style.RESET_ALL}")
+
 def administrar_usuarios():
     print(f"\n{Fore.LIGHTMAGENTA_EX}{'='*50}")
     print(f"      ADMINISTRACIÓN DE USUARIOS - SEM")
     print(f"{'='*50}{Style.RESET_ALL}")
     print(f"{Fore.WHITE}Seleccione una opción:{Style.RESET_ALL}")
-    print(f"{Fore.GREEN}1.{Style.RESET_ALL} Añadir usuario")
-    print(f"{Fore.LIGHTRED_EX}2.{Style.RESET_ALL} Volver al menú principal")
+    print(f"{Fore.GREEN}1. Añadir usuario{Style.RESET_ALL}")
+    print(f"{Fore.LIGHTRED_EX}2. Eliminar usuario{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}3. Volver al menú principal{Style.RESET_ALL}")
     
     try:
         opcion = int(input(f"\n{Fore.YELLOW}Ingrese su elección: {Style.RESET_ALL}"))
         if opcion == 1:
             añadir_usuario()
         elif opcion == 2:
+            eliminar_usuario()
+        elif opcion == 3:
             print(f"{Fore.CYAN}Regresando al menú principal...{Style.RESET_ALL}")
         else:
             raise ValueError
     except ValueError:
-        print(f"{Fore.RED}Error. Ingrese un número válido (1 o 2).{Style.RESET_ALL}")
+        print(f"{Fore.RED}Error. Ingrese un número válido (1, 2 o 3).{Style.RESET_ALL}")
 
 def mostrar_menu_principal():
     """Muestra el menú principal del sistema"""
