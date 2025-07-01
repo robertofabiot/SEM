@@ -1,5 +1,6 @@
 import sys
 import os
+import pwinput
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import dao.functions as funciones
@@ -7,6 +8,66 @@ from colorama import Fore, Style, init
 
 # Inicializar colorama
 init(autoreset=True)
+
+ruta = os.path.join(os.path.dirname(__file__), "usuarios.txt") #Variable global para el archivo de usuarios
+
+def cargar_usuarios():
+    usuarios = {}
+    if os.path.exists(ruta):
+        with open(ruta , "r") as archivo:
+            for linea in archivo:
+                datos = linea.strip().split(",")
+                if len(datos) == 2:
+                    usuario, clave = datos
+                    usuarios[usuario] = clave
+    return usuarios
+
+def iniciar_sesion():
+    usuarios = cargar_usuarios() 
+    for i in range(3):
+        print(f"**Intento #{i+1}**")
+        print("INICIO DE SESIÓN")
+        usuario = input("Usuario: ")
+        intento = pwinput.pwinput(prompt="Contraseña: ", mask="*")
+        if usuario in usuarios and usuarios[usuario] == intento:
+            print("Acceso permitido\n")
+            return
+        else:
+            print("Usuario o contraseña incorrectos\n")
+    print("Número de intentos excedido. Acceso denegado")
+    print("Saliendo del programa...")
+    exit()
+
+def añadir_usuario():
+    usuario = input("Ingrese el nombre de usuario: ")
+    clave = pwinput.pwinput(prompt="Ingrese la contraseña: ", mask="*")
+    clave_confirmación = pwinput.pwinput(prompt="Confirme la contraseña: ", mask="*")
+    if clave == clave_confirmación:
+        if os.path.exists(ruta):
+            with open(ruta , "a") as archivo:
+                archivo.write(f"{usuario},{clave}\n")
+        print("Usuario añadido.")
+    else:
+        print("Las claves no coinciden. Usuario no añadido.")
+
+def administrar_usuarios():
+    print(f"\n{Fore.LIGHTMAGENTA_EX}{'='*50}")
+    print(f"      ADMINISTRACIÓN DE USUARIOS - SEM")
+    print(f"{'='*50}{Style.RESET_ALL}")
+    print(f"{Fore.WHITE}Seleccione una opción:{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}1.{Style.RESET_ALL} Añadir usuario")
+    print(f"{Fore.LIGHTRED_EX}2.{Style.RESET_ALL} Volver al menú principal")
+    
+    try:
+        opcion = int(input(f"\n{Fore.YELLOW}Ingrese su elección: {Style.RESET_ALL}"))
+        if opcion == 1:
+            añadir_usuario()
+        elif opcion == 2:
+            print(f"{Fore.CYAN}Regresando al menú principal...{Style.RESET_ALL}")
+        else:
+            raise ValueError
+    except ValueError:
+        print(f"{Fore.RED}Error. Ingrese un número válido (1 o 2).{Style.RESET_ALL}")
 
 def mostrar_menu_principal():
     """Muestra el menú principal del sistema"""
@@ -22,13 +83,14 @@ def mostrar_menu_principal():
     print(f"{Fore.WHITE}6. {Fore.CYAN}Registrar venta")
     print(f"{Fore.WHITE}7. {Fore.LIGHTBLUE_EX}Historial de cotizaciones")
     print(f"{Fore.WHITE}8. {Fore.LIGHTGREEN_EX}Historial de ventas")
-    print(f"{Fore.WHITE}9. {Fore.LIGHTRED_EX}Salir{Style.RESET_ALL}")
+    print(f"{Fore.WHITE}9. {Fore.LIGHTRED_EX}Administrar usuarios")
+    print(f"{Fore.WHITE}10. {Fore.LIGHTMAGENTA_EX}Salir{Style.RESET_ALL}")
     print("="*60)
 
 def obtener_opcion():
     """Obtiene la opción seleccionada por el usuario"""
     try:
-        opcion = int(input(f"{Fore.CYAN}Seleccione una opción (1-9): {Style.RESET_ALL}"))
+        opcion = int(input(f"{Fore.CYAN}Seleccione una opción (1-10): {Style.RESET_ALL}"))
         return opcion
     except ValueError:
         print(f"{Fore.RED}Error: Ingrese un número válido.{Style.RESET_ALL}")
@@ -377,6 +439,7 @@ def mostrar_historial_ventas():
 
 def ejecutar_menu():
     """Ejecuta el menú principal"""
+    iniciar_sesion() #No es necesario comprobar si retorna True o False porque la función saca del programa al usuario automáticamente tras tres intentos fallidos
     while True:
         mostrar_menu_principal()
         opcion = obtener_opcion()
@@ -402,6 +465,8 @@ def ejecutar_menu():
         elif opcion == 8:
             mostrar_historial_ventas()
         elif opcion == 9:
+            administrar_usuarios()
+        elif opcion == 10:
             print(f"\n{Fore.GREEN}Gracias por usar Smart Easy Manager (SEM)")
             print(f"¡Hasta luego!{Style.RESET_ALL}")
             break
